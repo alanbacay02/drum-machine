@@ -1,5 +1,5 @@
 import './App.css';
-import { useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 
 // Creates an array to store audio file paths.
@@ -15,48 +15,63 @@ const AUDIO_FILES = [
 	'./soundpad/Cev_H2.mp3',  // Closed-HH
 ];
 
-function SoundButton({ handleClick, name, id }) {
+// Creates a `SoundButton` component with passed in props `handleClick` which is a function, `name` which is a string, `id` which is an string, and `isActive` which is a bool.
+function SoundButton({ handleClick, name, id, isActive }) {
 	return (
+		// Returns a <div> with a <button> element inside it.
 		<div>
 			<button 
 				id={id}
 				onClick={handleClick}
-				className="h-14 w-16 rounded-md focus:outline-none active:bg-red-500 text-white bg-gray-400"
+				className={`h-14 w-16 rounded-md focus:outline-none active:bg-red-500 text-white ${isActive ? 'bg-red-500' :  'bg-gray-400'}`}
 			>{name}</button>
 		</div>
 	);
 }
+// Validates props for `SoundButton` where `handleClick` is required a function, `name` is a string, `id` is required a string, and `isActive` is required a boolean value.
 SoundButton.propTypes = {
 	handleClick: PropTypes.func.isRequired,
 	name: PropTypes.string,
-	id: PropTypes.string.isRequired
+	id: PropTypes.string.isRequired,
+	isActive: PropTypes.bool.isRequired
 };
 
-function SoundPad({ handleClick }) {
+// Creates a component `SoundPad` with passed in props `handleClick` which is a function, and `activeButtonIndex` which is an integer.
+function SoundPad({ handleClick, activeButtonIndex }) {
+	// Creates an array `buttonNames` used to display text for each of our buttons.
 	const buttonNames = ['Q', 'W', 'E', 'A', 'S', 'D', 'Z', 'X', 'C'];
+	// Creates a new array `soundButtonArr` by mapping over `buttonNames` array.
 	const soundButtonArr = buttonNames.map((name, index) => {
+		// Assigns a boolean value to `isActive` depending if `activeButtonIndex` and `index` are equal to each other.
+		const isActive = index === activeButtonIndex;
 		return (
-			<SoundButton id={`soundButton${index}`} key={index} handleClick={() => {handleClick(index);}} name={name}/>
+			// Returns a child element `SoundButton` with a unique id, key, and name assigned to it. Props `handleClick` and `isActive` is also passed to it.
+			<SoundButton id={`soundButton${index}`} key={index} name={name} handleClick={() => {handleClick(index);}} isActive={isActive}/>
 		);
 	});
 
 	return (
+		// Returns a <div> with an array `soundButtonArr`.
 		<div className="grid grid-cols-3 gap-2 max-w-[290px] mx-auto p-4">
 			{soundButtonArr}
 		</div>
 	);
 }
+// Validates props for `SoundPad` where `handleClick` is required a function, and `activeButtonIndex` is a number.
 SoundPad.propTypes = {
-	handleClick: PropTypes.func.isRequired
+	handleClick: PropTypes.func.isRequired,
+	activeButtonIndex: PropTypes.number
 };
 
 export default function App() {
+	// Creates state `activeButtonIndex` to track whenever a button is pressed or not.
+	const [activeButtonIndex, setActiveButtonIndex] = useState(false);
 	// Maps over `AUDIO_FILES` array and creates new audio object using `new Audio` constructor.
 	const audio = AUDIO_FILES.map(filename => new Audio(filename));
 	// Creates an array `audioKeys` that will be used to match a keydown event to its corresponding button.
 	const audioKeys = ['q','w','e','a','s','d','z','x','c'];
 
-	// Creates an Event listener on component mount that will be used to track keydown events.
+	// Creates an Event listener on app initialization that will be used to track keydown events.
 	useEffect(() => {
 		// Creates a function that will handle a keydown event.
 		const handleKeyDown = (event) => {
@@ -71,26 +86,33 @@ export default function App() {
 				}
 			});
 		};
-
+		// Adds an event listener to the document that listens for keydown events.
 		document.addEventListener('keydown', handleKeyDown);
-
 		return () => {
+			// Removes the event listener when the component unmounts to prevent a memory leak.
 			document.removeEventListener('keydown', handleKeyDown);
 		};
 
 	}, []);
 
-
 	// Creates a function that will play audio when a sound button is clicked.
 	function handleClick(index) {
 		// Gets the audio file being played and resets its play duration to 0.
 		audio[index].currentTime = 0;
-		// Playes the audio file located in the `audio` array associated with the index.
+		// Plays the audio file located in the `audio` array associated with the index.
 		audio[index].play();
+		// Sets `activeButtonIndex` state to the index of the button clicked.
+		setActiveButtonIndex(index);
+		setTimeout(() => {
+			// Sets `activeButtonIndex` state to null after 100ms.
+			setActiveButtonIndex(null);
+		}, 100);
 	}
+
+	// Returns a div `App` with child element `SoundPad` with passed in props `handleClick` which is a function and `activeButtonIndex` which is an integer.
 	return (
 		<div className="App">
-			<SoundPad handleClick={handleClick} />
+			<SoundPad handleClick={handleClick} activeButtonIndex={activeButtonIndex} />
 		</div>
 	);
 }
