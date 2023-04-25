@@ -2,17 +2,17 @@ import './App.css';
 import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 
-// Creates an array to store audio file paths.
+// Creates an array to store audio file paths and instrument names.
 const AUDIO_FILES = [
-	'./soundpad/Heater-1.mp3', // Heater 1
-	'./soundpad/Heater-2.mp3', // Heater 2
-	'./soundpad/Heater-3.mp3', // Heater 3
-	'./soundpad/Heater-4_1.mp3', // Heater 4
-	'./soundpad/Heater-6.mp3', // Clap
-	'./soundpad/Dsc_Oh.mp3', // Open-HH
-	'./soundpad/Kick_n_Hat.mp3', // Kick-n'-Hat
-	'./soundpad/RP4_KICK_1.mp3', // Kick
-	'./soundpad/Cev_H2.mp3',  // Closed-HH
+	{ instName: 'Heater 1', fileName: './soundpad/Heater-1.mp3' },
+	{ instName: 'Heater 2', fileName: './soundpad/Heater-2.mp3' },
+	{ instName: 'Heater 3', fileName: './soundpad/Heater-3.mp3' },
+	{ instName: 'Heater 4', fileName: './soundpad/Heater-4_1.mp3' },
+	{ instName: 'Clap', fileName: './soundpad/Heater-6.mp3' },
+	{ instName: 'Open High-hat', fileName: './soundpad/Dsc_Oh.mp3' },
+	{ instName: 'Kick-n\'-Hat', fileName: './soundpad/Kick_n_Hat.mp3' },
+	{ instName: 'Kick', fileName: './soundpad/RP4_KICK_1.mp3' },
+	{ instName: 'Closed High-hat', fileName: './soundpad/Cev_H2.mp3' },
 ];
 
 // Creates a `SoundButton` component with passed in props `handleClick` which is a function, `name` which is a string, `id` which is an string, and `isActive` which is a bool.
@@ -36,8 +36,8 @@ SoundButton.propTypes = {
 	isActive: PropTypes.bool.isRequired
 };
 
-// Creates a component `SoundPad` with passed in props `handleClick` which is a function, and `activeButtonIndex` which is an integer.
-function SoundPad({ handleClick, activeButtonIndex }) {
+// Creates a component `SoundPad` with passed in props `handleClick` which is a function, `activeButtonIndex` which is an integer, and `instName` which is a string.
+function SoundPad({ handleClick, activeButtonIndex, instName }) {
 	// Creates an array `buttonNames` used to display text for each of our buttons.
 	const buttonNames = ['Q', 'W', 'E', 'A', 'S', 'D', 'Z', 'X', 'C'];
 	// Creates a new array `soundButtonArr` by mapping over `buttonNames` array.
@@ -58,30 +58,33 @@ function SoundPad({ handleClick, activeButtonIndex }) {
 			</div>
 			<div className="flex flex-row justify-center">
 				{/* Include Text Area Here!*/}
-				<div className="px-[60px] py-[2px] bg-black text-white">Text Area Here</div>
+				<div className="w-[180px] h-[30px] bg-black text-center text-white my-auto">{instName}</div>
 			</div>
 			<div className="flex flex-row justify-center">
-				{/* Include Text Area Here!*/}
+				{/* Include Volume Slider Here!*/}
 				<div className="px-[60px] py-[2px] bg-black text-white">Volume Slider Here</div>
 			</div>
 			<div className="flex flex-row justify-center">
-				{/* Include Text Area Here!*/}
+				{/* Include Buttons Here!*/}
 				<div className="px-[60px] py-[2px] bg-black text-white">Buttons here!</div>
 			</div>
 		</div>
 	);
 }
-// Validates props for `SoundPad` where `handleClick` is required a function, and `activeButtonIndex` is a number.
+// Validates props for `SoundPad` where `handleClick` is required a function, `activeButtonIndex` is a number, and `instName` is a string.
 SoundPad.propTypes = {
 	handleClick: PropTypes.func.isRequired,
-	activeButtonIndex: PropTypes.number
+	activeButtonIndex: PropTypes.number,
+	instName: PropTypes.string
 };
 
 export default function App() {
 	// Creates state `activeButtonIndex` to track whenever a button is pressed or not.
 	const [activeButtonIndex, setActiveButtonIndex] = useState(false);
+	// Creates state `instName` to track name of instrument being played.
+	const [instName, setInstName] = useState('');
 	// Maps over `AUDIO_FILES` array and creates new audio object using `new Audio` constructor.
-	const audio = AUDIO_FILES.map(filename => new Audio(filename));
+	const audio = AUDIO_FILES.map(object => new Audio(object.fileName));
 	// Creates an array `audioKeys` that will be used to match a keydown event to its corresponding button.
 	const audioKeys = ['q','w','e','a','s','d','z','x','c'];
 
@@ -121,12 +124,14 @@ export default function App() {
 		audio[index].currentTime = 0;
 		// Plays the audio file located in the `audio` array associated with the index.
 		audio[index].play();
+		// Sets `instName` state to name of instrument being played.
+		setInstName(AUDIO_FILES[index]['instName']);
 	}
 
-	// Returns a div `App` with child element `SoundPad` with passed in props `handleClick` which is a function and `activeButtonIndex` which is an integer.
+	// Returns a div `App` with child element `SoundPad` with passed in props `handleClick` which is a function, `activeButtonIndex` which is an integer and `instName` which is a string.
 	return (
 		<div className="App">
-			<SoundPad handleClick={handleClick} activeButtonIndex={activeButtonIndex}/>
+			<SoundPad handleClick={handleClick} activeButtonIndex={activeButtonIndex} instName={instName}/>
 		</div>
 	);
 }
