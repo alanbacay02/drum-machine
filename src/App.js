@@ -19,11 +19,11 @@ const AUDIO_FILES = [
 function SoundButton({ handleClick, name, id, isActive }) {
 	return (
 		// Returns a <div> with a <button> element inside it.
-		<div>
+		<div className="m-0 p-0">
 			<button 
 				id={id}
 				onClick={handleClick}
-				className={`h-14 w-16 rounded-md focus:outline-none active:bg-red-500 text-white ${isActive ? 'bg-red-500' :  'bg-gray-400'}`}
+				className={`h-[88px] w-[88px] rounded-2xl focus:outline-none active:bg-red-500 text-white ${isActive ? 'bg-red-500' : 'bg-sky-950'}`}
 			>{name}</button>
 		</div>
 	);
@@ -52,8 +52,22 @@ function SoundPad({ handleClick, activeButtonIndex }) {
 
 	return (
 		// Returns a <div> with an array `soundButtonArr`.
-		<div className="grid grid-cols-3 gap-2 max-w-[290px] mx-auto p-4">
-			{soundButtonArr}
+		<div className="flex flex-col gap-y-4 max-w-[300px] py-4 mx-auto mt-28 bg-blue-400 rounded-xl">
+			<div className="grid grid-cols-3 gap-[6px] mx-auto">
+				{soundButtonArr}
+			</div>
+			<div className="flex flex-row justify-center">
+				{/* Include Text Area Here!*/}
+				<div className="px-[60px] py-[2px] bg-black text-white">Text Area Here</div>
+			</div>
+			<div className="flex flex-row justify-center">
+				{/* Include Text Area Here!*/}
+				<div className="px-[60px] py-[2px] bg-black text-white">Volume Slider Here</div>
+			</div>
+			<div className="flex flex-row justify-center">
+				{/* Include Text Area Here!*/}
+				<div className="px-[60px] py-[2px] bg-black text-white">Buttons here!</div>
+			</div>
 		</div>
 	);
 }
@@ -82,7 +96,13 @@ export default function App() {
 					// Assigns to `button` the corresponding button that matches the keydown event.
 					const button = document.getElementById(`soundButton${index}`);
 					// Returns a button and clicks it.
-					return button.click();
+					button.click();
+					// Sets `activeButtonIndex` state to the index of the button clicked.
+					setActiveButtonIndex(index);
+					setTimeout(() => {
+						// Sets `activeButtonIndex` state to null after 100ms.
+						setActiveButtonIndex(null);
+					}, 100);
 				}
 			});
 		};
@@ -101,18 +121,12 @@ export default function App() {
 		audio[index].currentTime = 0;
 		// Plays the audio file located in the `audio` array associated with the index.
 		audio[index].play();
-		// Sets `activeButtonIndex` state to the index of the button clicked.
-		setActiveButtonIndex(index);
-		setTimeout(() => {
-			// Sets `activeButtonIndex` state to null after 100ms.
-			setActiveButtonIndex(null);
-		}, 100);
 	}
 
 	// Returns a div `App` with child element `SoundPad` with passed in props `handleClick` which is a function and `activeButtonIndex` which is an integer.
 	return (
 		<div className="App">
-			<SoundPad handleClick={handleClick} activeButtonIndex={activeButtonIndex} />
+			<SoundPad handleClick={handleClick} activeButtonIndex={activeButtonIndex}/>
 		</div>
 	);
 }
