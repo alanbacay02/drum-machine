@@ -85,38 +85,59 @@ export default function App() {
 	const [instName, setInstName] = useState('');
 	// Maps over `AUDIO_FILES` array and creates new audio object using `new Audio` constructor.
 	const audio = AUDIO_FILES.map(object => new Audio(object.fileName));
-	// Creates an array `audioKeys` that will be used to match a keydown event to its corresponding button.
+	// Creates an object `audioMap` that will be used to match a keydown event to its corresponding button.
+	const audioMap = {
+		'q': './soundpad/Heater-1.mp3',
+		'w': './soundpad/Heater-2.mp3',
+		'e': './soundpad/Heater-3.mp3',
+		'a': './soundpad/Heater-4_1.mp3',
+		's': './soundpad/Heater-6.mp3',
+		'd': './soundpad/Dsc_Oh.mp3',
+		'z': './soundpad/Kick_n_Hat.mp3',
+		'x': './soundpad/RP4_KICK_1.mp3',
+		'c': './soundpad/Cev_H2.mp3'
+	};
 	const audioKeys = ['q','w','e','a','s','d','z','x','c'];
 
 	// Creates an Event listener on app initialization that will be used to track keydown events.
 	useEffect(() => {
-		// Creates a function that will handle a keydown event.
-		const handleKeyDown = (event) => {
-			// Maps over the `audioKeys` array and gets both the `key` and its `index`.
-			audioKeys.map((key, index) => {
-				if (event.key === key) {
-					//const button = document.querySelectorAll('button')[index];
-					// Assigns to `button` the corresponding button that matches the keydown event.
-					const button = document.getElementById(`soundButton${index}`);
-					// Returns a button and clicks it.
-					button.click();
-					// Sets `activeButtonIndex` state to the index of the button clicked.
-					setActiveButtonIndex(index);
-					setTimeout(() => {
-						// Sets `activeButtonIndex` state to null after 100ms.
-						setActiveButtonIndex(null);
-					}, 100);
-				}
-			});
-		};
+		const keys = {}; 
 		// Adds an event listener to the document that listens for keydown events.
+		const handleKeyDown = (event) => {
+			const key = event.key.toLowerCase();
+			keys[key] = true;
+			playSounds(keys);
+		};
+		const handleKeyUp = (event) => {
+			const key = event.key.toLowerCase();
+			delete keys[key];
+		};
 		document.addEventListener('keydown', handleKeyDown);
+		document.addEventListener('keydown', handleKeyUp);
 		return () => {
-			// Removes the event listener when the component unmounts to prevent a memory leak.
+			// Removes the event listeners when the component unmounts to prevent a memory leak.
 			document.removeEventListener('keydown', handleKeyDown);
+			document.removeEventListener('keyup', handleKeyUp);
 		};
 
 	}, []);
+
+	function playSounds(keys) {
+		for (let key in keys) {
+			if (keys.hasOwnProperty(key)) {
+				handleClick(audioKeys.indexOf(key));
+				activateButton(audioKeys.indexOf(key));
+			}
+		}
+	}
+
+	function activateButton(index) {
+		setActiveButtonIndex(index);
+		setTimeout(() => {
+			setActiveButtonIndex(null);
+		}, 100);
+		clearTimeout();
+	}
 
 	// Creates a function that will play audio when a sound button is clicked.
 	function handleClick(index) {
