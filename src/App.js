@@ -12,7 +12,7 @@ const AUDIO_FILES = [
 	{ instName: 'Open High-hat', fileName: './soundpad/Dsc_Oh.mp3' },
 	{ instName: 'Kick-n\'-Hat', fileName: './soundpad/Kick_n_Hat.mp3' },
 	{ instName: 'Kick', fileName: './soundpad/RP4_KICK_1.mp3' },
-	{ instName: 'Closed High-hat', fileName: './soundpad/Cev_H2.mp3' },
+	{ instName: 'Closed High-hat', fileName: './soundpad/Cev_H2.mp3' }
 ];
 
 // Creates a `SoundButton` component with passed in props `handleClick` which is a function, `name` which is a string, `id` which is an string, and `isActive` which is a bool.
