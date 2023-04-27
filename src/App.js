@@ -97,7 +97,7 @@ export default function App() {
 		'x': './soundpad/RP4_KICK_1.mp3',
 		'c': './soundpad/Cev_H2.mp3'
 	};
-	const audioKeys = ['q','w','e','a','s','d','z','x','c'];
+	// const audioKeys = ['q','w','e','a','s','d','z','x','c'];
 
 	// Creates an Event listener on app initialization that will be used to track keydown events.
 	useEffect(() => {
@@ -124,19 +124,11 @@ export default function App() {
 
 	function playSounds(keys) {
 		for (let key in keys) {
-			if (keys.hasOwnProperty(key)) {
-				handleClick(audioKeys.indexOf(key));
-				activateButton(audioKeys.indexOf(key));
+			if (Object.prototype.hasOwnProperty.call(audioMap, key)) {
+				const audio = new Audio(audioMap[key]);
+				audio.play();
 			}
 		}
-	}
-
-	function activateButton(index) {
-		setActiveButtonIndex(index);
-		setTimeout(() => {
-			setActiveButtonIndex(null);
-		}, 100);
-		clearTimeout();
 	}
 
 	// Creates a function that will play audio when a sound button is clicked.
