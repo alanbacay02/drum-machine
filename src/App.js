@@ -38,7 +38,7 @@ SoundButton.propTypes = {
 	buttonRefs: PropTypes.func
 };
 
-// Creates a component `SoundPad` with passed in props `handleClick` which is a function, `activeButtonIndex` which is an integer, `instName` which is a string, and `buttonRefs` which is a object.
+// Creates a component `SoundPad` with passed in props `handleClick` which is a function, `activeButtonIndex` which is an integer, `instName` which is a string, and `buttonRefs` which is a string.
 function SoundPad({ handleClick, instName, buttonRefs}) {
 	// Creates an array `buttonNames` used to display text for each of our buttons.
 	const buttonNames = ['Q', 'W', 'E', 'A', 'S', 'D', 'Z', 'X', 'C'];
@@ -46,7 +46,8 @@ function SoundPad({ handleClick, instName, buttonRefs}) {
 	const soundButtonArray = buttonNames.map((name, index) => {
 		// Assigns a boolean value to `isActive` depending if `activeButtonIndex` and `index` are equal to each other.
 		return (
-			// Returns a child element `SoundButton` with a unique id, key, and name assigned to it. Props `handleClick` and `isActive` is also passed to it.
+		// Returns a child element `SoundButton` with a unique id, key, and name assigned to it. Props `handleClick`, `isActive` and `buttonRefs` is also passed to it.
+		// `buttonRefs` passes a function that takes in the DOM element as an argument and assigns it to a `buttonRefs` object with `index` as the key.
 			<SoundButton buttonRefs={(el) => (buttonRefs.current[index] = el)} id={`soundButton${index}`} key={index} name={name} handleClick={() => {handleClick(index);}}/>
 		);
 	});
@@ -77,10 +78,13 @@ SoundPad.propTypes = {
 	handleClick: PropTypes.func.isRequired,
 	activeButtonIndex: PropTypes.number,
 	instName: PropTypes.string,
-	buttonRefs: PropTypes.object.isRequired
+	buttonRefs: PropTypes.shape({
+		current: PropTypes.arrayOf(PropTypes.object),
+	}).isRequired,
 };
 
 export default function App() {
+	// Creates a ref to track an array of 9 button elements.
 	const buttonRefs = useRef([]);
 	// Creates state `instName` to track name of instrument being played.
 	const [instName, setInstName] = useState('');
