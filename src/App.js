@@ -38,8 +38,8 @@ SoundButton.propTypes = {
 	buttonRefs: PropTypes.func
 };
 
-// Creates a component `SoundPad` with passed in props `handleClick` which is a function, `activeButtonIndex` which is an integer, `instName` which is a string, and `buttonRefs` which is a string.
-function SoundPad({ handleClick, instName, buttonRefs}) {
+// Creates a component `SoundPad` with passed in props `handleClick` which is a function, `activeButtonIndex` which is an integer, and `buttonRefs` which is a string.
+function SoundPad({ handleClick, buttonRefs}) {
 	// Creates an array `buttonNames` used to display text for each of our buttons.
 	const buttonNames = ['Q', 'W', 'E', 'A', 'S', 'D', 'Z', 'X', 'C'];
 	// Creates a new array `soundButtonArray` by mapping over `buttonNames` array.
@@ -53,35 +53,51 @@ function SoundPad({ handleClick, instName, buttonRefs}) {
 	});
 
 	return (
-		// Returns a <div> with an array `soundButtonArray`.
-		<div className="flex flex-col gap-y-4 max-w-[300px] py-4 mx-auto mt-28 bg-blue-400 rounded-xl">
-			<div className="grid grid-cols-3 gap-[6px] mx-auto">
-				{soundButtonArray}
-			</div>
-			<div className="flex flex-row justify-center">
-				{/* Include Text Area Here!*/}
-				<div className="w-[180px] h-[30px] bg-black text-center text-white my-auto">{instName}</div>
-			</div>
-			<div className="flex flex-row justify-center">
-				{/* Include Volume Slider Here!*/}
-				<div className="px-[60px] py-[2px] bg-black text-white">Volume Slider Here</div>
-			</div>
-			<div className="flex flex-row justify-center">
-				{/* Include Buttons Here!*/}
-				<div className="px-[60px] py-[2px] bg-black text-white">Buttons here!</div>
-			</div>
-		</div>
+		// Returns array `soundButtonArray`.
+		<>
+			{soundButtonArray}
+		</>
 	);
 }
-// Validates props for `SoundPad` where `handleClick` is required a function, `activeButtonIndex` is a number, `instName` is a string, and `buttonRefs` which is an object.
+// Validates props for `SoundPad` where `handleClick` is required a function, `activeButtonIndex` is a number, and `buttonRefs` which is an object.
 SoundPad.propTypes = {
 	handleClick: PropTypes.func.isRequired,
 	activeButtonIndex: PropTypes.number,
-	instName: PropTypes.string,
 	buttonRefs: PropTypes.shape({
 		current: PropTypes.arrayOf(PropTypes.object),
 	}).isRequired,
 };
+
+// Creates a component `InstrumentNameDisplay` to display the name of the instrument being played with props `instName`.
+function InstrumentNameDisplay({ instName }) {
+	return (
+		<>
+			<div className="w-[180px] h-[30px] bg-black text-center text-white my-auto">{instName}</div>
+		</>
+	);
+}
+// Valiudates props for `InstrumentNameDisplay` where `instName` is a string.
+InstrumentNameDisplay.propTypes = {
+	instName: PropTypes.string
+};
+
+function VolumeSlider() {
+	return (
+		<>
+			{/* Include Volume Slider Here!*/}
+			<div className="px-[60px] py-[2px] bg-black text-white">Volume Slider Here</div>
+		</>
+	);
+}
+
+function ControlPanel() {
+	return (
+		<>
+			{/* Include Buttons Here!*/}
+			<div className="px-[60px] py-[2px] bg-black text-white">Buttons here!</div>
+		</>
+	);
+}
 
 export default function App() {
 	// Creates a ref to track an array of 9 button elements.
@@ -176,13 +192,27 @@ export default function App() {
 		setTimeout(() => {
 			// Removes the `active` attribute from `className` after 100ms.
 			buttonTarget.classList.remove('active');
-		}, 150);
+		}, 100);
 	}
 
 	// Returns a div `App` with child element `SoundPad` with passed in props `handleClick` which is a function, `activeButtonIndex` which is an integer, `instName` which is a string, and `buttonRefs` which is an object.
 	return (
 		<div className="App">
-			<SoundPad buttonRefs={buttonRefs} handleClick={handleClick} instName={instName}/>
-		</div>
+			<div className="flex flex-col gap-y-4 max-w-[300px] py-4 mx-auto mt-28 bg-blue-400 rounded-xl">
+				<div className="grid grid-cols-3 gap-[6px] mx-auto">
+					<SoundPad buttonRefs={buttonRefs} handleClick={handleClick}/>
+				</div>
+				<div className="flex flex-row justify-center">
+					{/* Include Text Area Here!*/}
+					<InstrumentNameDisplay instName={instName} />
+				</div>
+				<div className="flex flex-row justify-center">
+					<VolumeSlider />
+				</div>
+				<div className="flex flex-row justify-center">
+					<ControlPanel />
+				</div>
+			</div>
+		</div>		
 	);
 }
