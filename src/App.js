@@ -81,14 +81,20 @@ InstrumentNameDisplay.propTypes = {
 	instName: PropTypes.string
 };
 
-function VolumeSlider() {
+function VolumeSlider({ audioVolume, handleVolumeChange }) {
 	return (
 		<>
 			{/* Include Volume Slider Here!*/}
-			<div className="px-[60px] py-[2px] bg-black text-white">Volume Slider Here</div>
+			<div className="px-[60px] py-[2px] bg-black text-white">
+				<input type="range" min={0} max={1} step={0.1} value={audioVolume} onChange={(event) => handleVolumeChange(event)}></input>
+			</div>
 		</>
 	);
 }
+VolumeSlider.propTypes = {
+	audioVolume: PropTypes.number.isRequired,
+	handleVolumeChange: PropTypes.func.isRequired
+};
 
 function ControlPanel() {
 	return (
@@ -100,10 +106,13 @@ function ControlPanel() {
 }
 
 export default function App() {
-	// Creates a ref to track an array of 9 button elements.
-	const buttonRefs = useRef([]);
 	// Creates state `instName` to track name of instrument being played.
 	const [instName, setInstName] = useState('');
+	// Creates state `volume` to track volume level of app.
+	const [audioVolume, setAudioVolume] = useState(1);
+
+	// Creates a ref to track an array of 9 button elements.
+	const buttonRefs = useRef([]);
 	// Maps over `AUDIO_FILES` array and creates new audio object using `new Audio` constructor.
 	const audio = AUDIO_FILES.map(object => new Audio(object.fileName));
 	// Creates an object `audioMap` that will be used to match a keydown event to its corresponding button.
@@ -121,6 +130,9 @@ export default function App() {
 
 	// Creates an Event listener on app initialization that will be used to track keydown events.
 	useEffect(() => {
+		audio.forEach((audioFile) => {
+			audioFile.volume = audioVolume;
+		});
 		// Creates an object `pressedKeys` to track key events.
 		const pressedKeys = {}; 
 		// Adds an event listener to the document that listens for keydown events.
@@ -147,7 +159,7 @@ export default function App() {
 			document.removeEventListener('keydown', handleKeyDown);
 			document.removeEventListener('keyup', handleKeyUp);
 		};
-	}, []);
+	}, [audioVolume]);
 
 	// Helper function that plays audio files based on the keys stored in `pressedKeys`.
 	function playSounds(pressedKeys) {
@@ -161,26 +173,23 @@ export default function App() {
 				playAudio(keyIndex);
 				// Calls `activateButton` to handle active button states.
 				activateButton(keyIndex);
-				// Sets `instName` state to respective `instName` of audio file from `AUDIO_FILES`.
-				setInstName(AUDIO_FILES[keyIndex].instName);
 			}
 		}
 	}
-	
-	// Creates a function that will play audio when a sound button is clicked.
-	function handleClick(index) {
-		// Calls `playAudio` to play the respective audio file based on the value supplied by `index`.
-		playAudio(index);
-		// Sets `instName` state to name of instrument being played.
-		setInstName(AUDIO_FILES[index]['instName']);
+
+	function handleVolumeChange(event) {
+		setAudioVolume(event.target.valueAsNumber);
+		console.log(event.target.valueAsNumber);
 	}
 
-	// Helper function `playAudio` that playes a respective audio file based on the supplied `index`.
+	// Function `playAudio` that playes a respective audio file based on the supplied `index`.
 	function playAudio(audioIndex) {
 		// Gets the audio file being played and resets its play duration to 0.
 		audio[audioIndex].currentTime = 0;
 		// Plays the audio file located in the `audio` array associated with the index.
 		audio[audioIndex].play();
+		// Sets `instName` state to name of instrument being played.
+		setInstName(AUDIO_FILES[audioIndex]['instName']);
 	}
 
 	// Helper function that updates the references of the buttons.
@@ -200,14 +209,14 @@ export default function App() {
 		<div className="App">
 			<div className="flex flex-col gap-y-4 max-w-[300px] py-4 mx-auto mt-28 bg-blue-400 rounded-xl">
 				<div className="grid grid-cols-3 gap-[6px] mx-auto">
-					<SoundPad buttonRefs={buttonRefs} handleClick={handleClick}/>
+					<SoundPad buttonRefs={buttonRefs} handleClick={playAudio}/>
 				</div>
 				<div className="flex flex-row justify-center">
 					{/* Include Text Area Here!*/}
 					<InstrumentNameDisplay instName={instName} />
 				</div>
 				<div className="flex flex-row justify-center">
-					<VolumeSlider />
+					<VolumeSlider volume={audioVolume} handleVolumeChange={handleVolumeChange} />
 				</div>
 				<div className="flex flex-row justify-center">
 					<ControlPanel />
