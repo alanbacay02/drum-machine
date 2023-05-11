@@ -24,7 +24,7 @@ function SoundButton({ handleClick, name, id, buttonRefs}) {
 				ref={buttonRefs}
 				id={id}
 				onClick={handleClick}
-				className={'h-[88px] w-[88px] rounded-2xl focus:outline-none bg-slate-800 transition-colors duration-100 text-white active:bg-red-500'}
+				className="h-[88px] w-[88px] rounded-2xl focus:outline-none bg-slate-800 transition-colors duration-100 text-white"
 			>{name}</button>
 		</div>
 	);
@@ -81,35 +81,50 @@ InstrumentNameDisplay.propTypes = {
 	instName: PropTypes.string
 };
 
+// Creates a component function `VolumeSlider` which creates a volume slider to control the audio volume of the app.
 function VolumeSlider({ audioVolume, handleVolumeChange }) {
+	// Returns a <div/> with an <input/> set to `range` where on change calls the function `handleVolumeChange` from props. Initial volume of slider is set to value from props `audioVolume`.
 	return (
 		<>
-			{/* Include Volume Slider Here!*/}
 			<div className="px-[60px] py-[2px] bg-black text-white">
 				<input type="range" min={0} max={1} step={0.1} value={audioVolume} onChange={(event) => handleVolumeChange(event)}></input>
 			</div>
 		</>
 	);
 }
+// Validates props for `VolumeSlider` where `audioVolume` is a number and `handleVolumeChange` is a function.
 VolumeSlider.propTypes = {
-	audioVolume: PropTypes.number.isRequired,
+	audioVolume: PropTypes.number,
 	handleVolumeChange: PropTypes.func.isRequired
 };
 
-function ControlPanel() {
+// Creates a component function `ControlPanel` to store the power button of the app and bank button. 
+function ControlPanel({ handlePowerButtonClick }) {
+	// Returns a button which calls `handlePowerButtonClick` function `onClick`.
 	return (
 		<>
-			{/* Include Buttons Here!*/}
-			<div className="px-[60px] py-[2px] bg-black text-white">Buttons here!</div>
+			<div className="px-[60px] py-[2px] bg-black text-white">
+				<button
+					className="px-[13px] py-[13px] rounded-full focus:outline-none"
+					onClick={handlePowerButtonClick}
+				></button>
+				<p>Power</p>
+			</div>
 		</>
 	);
 }
+// Validates props for `ControlPanel` where `handlePowerButtonClick` is a function.
+ControlPanel.propTypes = {
+	handlePowerButtonClick: PropTypes.func.isRequired
+};
 
 export default function App() {
 	// Creates state `instName` to track name of instrument being played.
 	const [instName, setInstName] = useState('');
 	// Creates state `volume` to track volume level of app.
 	const [audioVolume, setAudioVolume] = useState(1);
+	// Creates state `isAppOn` to track power state of app.
+	const [isAppOn, setIsAppOn] = useState(true);
 
 	// Creates a ref to track an array of 9 button elements.
 	const buttonRefs = useRef([]);
@@ -159,7 +174,7 @@ export default function App() {
 			document.removeEventListener('keydown', handleKeyDown);
 			document.removeEventListener('keyup', handleKeyUp);
 		};
-	}, [audioVolume]);
+	}, [audioVolume, isAppOn]);
 
 	// Helper function that plays audio files based on the keys stored in `pressedKeys`.
 	function playSounds(pressedKeys) {
@@ -169,38 +184,48 @@ export default function App() {
 			if (Object.prototype.hasOwnProperty.call(audioMap, key)) {
 				// Stores the integer value of the `key` in `pressedKeys` to `keyIndex`.
 				let keyIndex = pressedKeys[key];
-				// Calls `playAudio` to play the respective audio file based on the value supplied by `keyIndex`.
+				// Calls function `playAudio` to play the respective audio file based on `keyIndex`.
 				playAudio(keyIndex);
-				// Calls `activateButton` to handle active button states.
-				activateButton(keyIndex);
 			}
 		}
 	}
 
+	// Creates a function `handleVolumeChange` that is called when the volume slider value in `VolumeSlider` changes.
 	function handleVolumeChange(event) {
+		// Sets `audioVolume` state to the event value number.
 		setAudioVolume(event.target.valueAsNumber);
-		console.log(event.target.valueAsNumber);
 	}
 
-	// Function `playAudio` that playes a respective audio file based on the supplied `index`.
+	// Creates function `playAudio` that plays a respective audio file based on the supplied `index` `onClick` or on `keydown` event.
 	function playAudio(audioIndex) {
+		if (!isAppOn) {
+			// Returns function `activateButton` early when `isAppOn` is set to false.
+			return activateButton(audioIndex);
+		}
 		// Gets the audio file being played and resets its play duration to 0.
 		audio[audioIndex].currentTime = 0;
 		// Plays the audio file located in the `audio` array associated with the index.
 		audio[audioIndex].play();
+		// Calls `activateButton` to handle active button states.
+		activateButton(audioIndex);
 		// Sets `instName` state to name of instrument being played.
 		setInstName(AUDIO_FILES[audioIndex]['instName']);
+	}
+
+	// Creates function `handlePowerButtonClick` that will turn on or off the app `onClick`.
+	function handlePowerButtonClick() {
+		setIsAppOn(!isAppOn);
 	}
 
 	// Helper function that updates the references of the buttons.
 	function activateButton(buttonIndex) {
 		// Gets the reference of the button targeted.
 		const buttonTarget = buttonRefs.current[buttonIndex];
-		// Adds an `active` attribute to the `className` of the button.
-		buttonTarget.classList.add('active');
+		// Adds an `active` or `active-off` attribute to the `classList` of the button depending on the value of `isAppOn`.
+		buttonTarget.classList.add(isAppOn ? 'active' : 'active-off');
 		setTimeout(() => {
-			// Removes the `active` attribute from `className` after 100ms.
-			buttonTarget.classList.remove('active');
+			// Removes the `active` or `active-off` attribute from `className` after 100ms.
+			buttonTarget.classList.remove(isAppOn ? 'active' : 'active-off');
 		}, 100);
 	}
 
@@ -208,18 +233,17 @@ export default function App() {
 	return (
 		<div className="App">
 			<div className="flex flex-col gap-y-4 max-w-[300px] py-4 mx-auto mt-28 bg-blue-400 rounded-xl">
-				<div className="grid grid-cols-3 gap-[6px] mx-auto">
+				<div id="soundpad" className="grid grid-cols-3 gap-[6px] mx-auto">
 					<SoundPad buttonRefs={buttonRefs} handleClick={playAudio}/>
 				</div>
 				<div className="flex flex-row justify-center">
-					{/* Include Text Area Here!*/}
 					<InstrumentNameDisplay instName={instName} />
 				</div>
 				<div className="flex flex-row justify-center">
 					<VolumeSlider volume={audioVolume} handleVolumeChange={handleVolumeChange} />
 				</div>
 				<div className="flex flex-row justify-center">
-					<ControlPanel />
+					<ControlPanel  isAppOn={isAppOn} handlePowerButtonClick={handlePowerButtonClick} />
 				</div>
 			</div>
 		</div>		
