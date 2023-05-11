@@ -99,13 +99,13 @@ VolumeSlider.propTypes = {
 };
 
 // Creates a component function `ControlPanel` to store the power button of the app and bank button. 
-function ControlPanel({ handlePowerButtonClick }) {
+function ControlPanel({ handlePowerButtonClick, isAppOn }) {
 	// Returns a button which calls `handlePowerButtonClick` function `onClick`.
 	return (
 		<>
 			<div className="px-[60px] py-[2px] bg-black text-white">
 				<button
-					className="px-[13px] py-[13px] rounded-full focus:outline-none"
+					className={`px-[13px] py-[13px] rounded-full focus:outline-none ${isAppOn ? 'bg-red-500' : 'bg-white'}`}
 					onClick={handlePowerButtonClick}
 				></button>
 				<p>Power</p>
@@ -113,9 +113,10 @@ function ControlPanel({ handlePowerButtonClick }) {
 		</>
 	);
 }
-// Validates props for `ControlPanel` where `handlePowerButtonClick` is a function.
+// Validates props for `ControlPanel` where `handlePowerButtonClick` is a function and `isAppOn` is a bool.
 ControlPanel.propTypes = {
-	handlePowerButtonClick: PropTypes.func.isRequired
+	handlePowerButtonClick: PropTypes.func.isRequired,
+	isAppOn: PropTypes.bool.isRequired
 };
 
 export default function App() {
