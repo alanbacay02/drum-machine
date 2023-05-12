@@ -123,7 +123,7 @@ export default function App() {
 	// Creates state `instName` to track name of instrument being played.
 	const [instName, setInstName] = useState('');
 	// Creates state `volume` to track volume level of app.
-	const [audioVolume, setAudioVolume] = useState(1);
+	const [audioVolume, setAudioVolume] = useState(0.5);
 	// Creates state `isAppOn` to track power state of app.
 	const [isAppOn, setIsAppOn] = useState(true);
 
@@ -195,6 +195,7 @@ export default function App() {
 	function handleVolumeChange(event) {
 		// Sets `audioVolume` state to the event value number.
 		setAudioVolume(event.target.valueAsNumber);
+		console.log(audioVolume);
 	}
 
 	// Creates function `playAudio` that plays a respective audio file based on the supplied `index` `onClick` or on `keydown` event.
@@ -205,6 +206,8 @@ export default function App() {
 		}
 		// Gets the audio file being played and resets its play duration to 0.
 		audio[audioIndex].currentTime = 0;
+		// Assigns `audioVolume` state to the volume level of the audio file.
+		audio[audioIndex].volume = audioVolume;
 		// Plays the audio file located in the `audio` array associated with the index.
 		audio[audioIndex].play();
 		// Calls `activateButton` to handle active button states.
@@ -233,7 +236,7 @@ export default function App() {
 	// Returns a div `App` with child element `SoundPad` with passed in props `handleClick` which is a function, `activeButtonIndex` which is an integer, `instName` which is a string, and `buttonRefs` which is an object.
 	return (
 		<div className="App">
-			<div className="flex flex-col gap-y-4 max-w-[300px] py-4 mx-auto mt-28 bg-blue-400 rounded-xl">
+			<div className="flex flex-col gap-y-4 py-4 mx-auto mt-28 w-[300px] md:w-[600px] bg-blue-400 rounded-xl">
 				<div id="soundpad" className="grid grid-cols-3 gap-[6px] mx-auto">
 					<SoundPad buttonRefs={buttonRefs} handleClick={playAudio}/>
 				</div>
