@@ -244,29 +244,36 @@ export default function App() {
 
 	// Returns a div `App` with child element `SoundPad` with passed in props `handleClick` which is a function, `activeButtonIndex` which is an integer, `instName` which is a string, and `buttonRefs` which is an object.
 	return (
-		<div id="drum-machine" className="App flex flex-col gap-10 lg:flex-row mx-auto my-[100px] py-8 rounded-lg text-white w-[300px] md:w-[440px] md:text-lg lg:w-[830px] lg:h-[450px] lg:py-4">
-			<div id="soundpad" className="grid grid-cols-3 gap-4 m-auto h-auto">
-				<SoundPad buttonRefs={buttonRefs} handleClick={playAudio}/>
-			</div>
-			<div className="flex flex-col gap-y-6 lg:gap-y-16 mx-auto lg:my-auto">
-				<div className="flex flex-row justify-center">
-					<div id={isAppOn ? 'text-display' : 'text-display-off'} className="flex w-[180px] h-[40px] md:w-[220px] md:h-[47px] lg:w-[260px] lg:h-[55px] rounded-sm justify-center items-center">
-						<InstrumentNameDisplay instName={instName}/>
-					</div>
+		<>
+			<div id="drum-machine" className="App flex flex-col gap-10 lg:flex-row mx-auto mt-[100px] py-8 rounded-lg text-white w-[300px] md:w-[440px] md:text-lg lg:w-[830px] lg:h-[450px] lg:py-4">
+				<div id="soundpad" className="grid grid-cols-3 gap-4 m-auto h-auto">
+					<SoundPad buttonRefs={buttonRefs} handleClick={playAudio}/>
 				</div>
-				<div className="flex flex-col justify-center gap-y-4 lg:gap-x-14 lg:flex-row">
-					<div className="flex flex-row justify-center lg:-rotate-90 lg:w-[62px] lg:h-[112px]">
-						<div className="my-auto">
-							<VolumeSlider volume={audioVolume} handleVolumeChange={handleVolumeChange} />
-						</div>
-					</div>
+				<div className="flex flex-col gap-y-6 lg:gap-y-16 mx-auto lg:my-auto">
 					<div className="flex flex-row justify-center">
-						<div className="my-auto">
-							<ControlPanel  isAppOn={isAppOn} handlePowerButtonClick={handlePowerButtonClick} />
+						<div id={isAppOn ? 'text-display' : 'text-display-off'} className="flex w-[180px] h-[40px] md:w-[220px] md:h-[47px] lg:w-[260px] lg:h-[55px] rounded-sm justify-center items-center">
+							<InstrumentNameDisplay instName={instName}/>
+						</div>
+					</div>
+					<div className="flex flex-col justify-center gap-y-4 lg:gap-x-14 lg:flex-row">
+						<div className="flex flex-row justify-center lg:-rotate-90 lg:w-[62px] lg:h-[112px]">
+							<div className="my-auto">
+								<VolumeSlider volume={audioVolume} handleVolumeChange={handleVolumeChange} />
+							</div>
+						</div>
+						<div className="flex flex-row justify-center">
+							<div className="my-auto">
+								<ControlPanel  isAppOn={isAppOn} handlePowerButtonClick={handlePowerButtonClick} />
+							</div>
 						</div>
 					</div>
 				</div>
 			</div>
-		</div>
+			<div className="mx-auto mt-1 max-w-[300px] md:max-w-[440px] lg:max-w-[830px]">
+				<p className="text-white text-right lg:text-lg">
+					by <a className="font-bold hover:underline" href="https://github.com/alanbacay02" rel="noreferrer" target='_blank'>Alan</a>
+				</p>
+			</div>
+		</>
 	);
 }
