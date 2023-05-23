@@ -1,6 +1,8 @@
 import './App.css';
 import { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faVolumeHigh, faVolumeOff } from '@fortawesome/free-solid-svg-icons';
 
 // Creates an array to store audio file paths and instrument names.
 const AUDIO_FILES = [
@@ -85,7 +87,8 @@ InstrumentNameDisplay.propTypes = {
 function VolumeSlider({ audioVolume, handleVolumeChange }) {
 	// Returns a <div/> with an <input/> set to `range` where on change calls the function `handleVolumeChange` from props. Initial volume of slider is set to value from props `audioVolume`.
 	return (
-		<>
+		<div className="flex flex-row gap-x-2">
+			<FontAwesomeIcon icon={faVolumeOff} className="text-sm lg:rotate-90" />
 			<input
 				className="accent-[#FFFFFF] w-28"
 				type="range"
@@ -95,7 +98,8 @@ function VolumeSlider({ audioVolume, handleVolumeChange }) {
 				value={audioVolume}
 				onChange={(event) => handleVolumeChange(event)}>
 			</input>
-		</>
+			<FontAwesomeIcon icon={faVolumeHigh} className="text-sm lg:rotate-90" />
+		</div>
 	);
 }
 // Validates props for `VolumeSlider` where `audioVolume` is a number and `handleVolumeChange` is a function.
