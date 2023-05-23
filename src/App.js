@@ -19,14 +19,14 @@ const AUDIO_FILES = [
 function SoundButton({ handleClick, name, id, buttonRefs}) {
 	return (
 		// Returns a <div> with a <button> element inside it.
-		<div className="m-0 p-0">
+		<>
 			<button 
 				ref={buttonRefs}
 				id={id}
 				onClick={handleClick}
-				className="h-[88px] w-[88px] rounded-2xl focus:outline-none bg-slate-800 transition-colors duration-100 text-white"
+				className="drum-pad text-black h-[75px] w-[75px] md:h-[96px] md:w-[96px] rounded-xl focus:outline-none bg-gray-100 transition-all duration-100"
 			>{name}</button>
-		</div>
+		</>
 	);
 }
 // Validates props for `SoundButton` where `handleClick` is required a function, `name` is a string, `id` is required a string, `isActive` is required a boolean value, and `buttonRefs` is a function.
@@ -72,7 +72,7 @@ SoundPad.propTypes = {
 function InstrumentNameDisplay({ instName }) {
 	return (
 		<>
-			<div className="w-[180px] h-[30px] bg-black text-center text-white my-auto">{instName}</div>
+			<p id="display" className="">{instName}</p>
 		</>
 	);
 }
@@ -86,9 +86,15 @@ function VolumeSlider({ audioVolume, handleVolumeChange }) {
 	// Returns a <div/> with an <input/> set to `range` where on change calls the function `handleVolumeChange` from props. Initial volume of slider is set to value from props `audioVolume`.
 	return (
 		<>
-			<div className="px-[60px] py-[2px] bg-black text-white">
-				<input type="range" min={0} max={1} step={0.1} value={audioVolume} onChange={(event) => handleVolumeChange(event)}></input>
-			</div>
+			<input
+				className="accent-[#FFFFFF] w-28"
+				type="range"
+				min={0}
+				max={1}
+				step={0.1}
+				value={audioVolume}
+				onChange={(event) => handleVolumeChange(event)}>
+			</input>
 		</>
 	);
 }
@@ -98,18 +104,17 @@ VolumeSlider.propTypes = {
 	handleVolumeChange: PropTypes.func.isRequired
 };
 
-// Creates a component function `ControlPanel` to store the power button of the app and bank button. 
+// Creates a component function `ControlPanel` to store the power button of the app 
 function ControlPanel({ handlePowerButtonClick, isAppOn }) {
 	// Returns a button which calls `handlePowerButtonClick` function `onClick`.
 	return (
 		<>
-			<div className="px-[60px] py-[2px] bg-black text-white">
-				<button
-					className={`px-[13px] py-[13px] rounded-full focus:outline-none ${isAppOn ? 'bg-red-500' : 'bg-white'}`}
-					onClick={handlePowerButtonClick}
-				></button>
-				<p>Power</p>
-			</div>
+			<button
+				id={`${isAppOn ? 'power-button-on' : 'power-button-off'}`}
+				className="flex mx-auto px-[13px] py-[13px] lg:px-[16px] lg:py-[16px] rounded-full focus:outline-none transition-all duration-100"
+				onClick={handlePowerButtonClick}
+			></button>
+			<p className="pt-2 pl-2">Power</p>
 		</>
 	);
 }
@@ -195,7 +200,6 @@ export default function App() {
 	function handleVolumeChange(event) {
 		// Sets `audioVolume` state to the event value number.
 		setAudioVolume(event.target.valueAsNumber);
-		console.log(audioVolume);
 	}
 
 	// Creates function `playAudio` that plays a respective audio file based on the supplied `index` `onClick` or on `keydown` event.
@@ -219,6 +223,7 @@ export default function App() {
 	// Creates function `handlePowerButtonClick` that will turn on or off the app `onClick`.
 	function handlePowerButtonClick() {
 		setIsAppOn(!isAppOn);
+		setInstName('');
 	}
 
 	// Helper function that updates the references of the buttons.
@@ -230,26 +235,34 @@ export default function App() {
 		setTimeout(() => {
 			// Removes the `active` or `active-off` attribute from `className` after 100ms.
 			buttonTarget.classList.remove(isAppOn ? 'active' : 'active-off');
-		}, 100);
+		}, 130);
 	}
 
 	// Returns a div `App` with child element `SoundPad` with passed in props `handleClick` which is a function, `activeButtonIndex` which is an integer, `instName` which is a string, and `buttonRefs` which is an object.
 	return (
-		<div className="App">
-			<div className="flex flex-col gap-y-4 py-4 mx-auto mt-28 w-[300px] md:w-[600px] bg-blue-400 rounded-xl">
-				<div id="soundpad" className="grid grid-cols-3 gap-[6px] mx-auto">
-					<SoundPad buttonRefs={buttonRefs} handleClick={playAudio}/>
-				</div>
+		<div id="drum-machine" className="App flex flex-col gap-10 lg:flex-row mx-auto my-[100px] py-8 rounded-lg text-white w-[300px] md:w-[440px] md:text-lg lg:w-[830px] lg:h-[450px] lg:py-4">
+			<div id="soundpad" className="grid grid-cols-3 gap-4 m-auto h-auto">
+				<SoundPad buttonRefs={buttonRefs} handleClick={playAudio}/>
+			</div>
+			<div className="flex flex-col gap-y-6 lg:gap-y-16 mx-auto lg:my-auto">
 				<div className="flex flex-row justify-center">
-					<InstrumentNameDisplay instName={instName} />
+					<div id={isAppOn ? 'text-display' : 'text-display-off'} className="flex w-[180px] h-[40px] md:w-[220px] md:h-[47px] lg:w-[260px] lg:h-[55px] rounded-sm justify-center items-center">
+						<InstrumentNameDisplay instName={instName}/>
+					</div>
 				</div>
-				<div className="flex flex-row justify-center">
-					<VolumeSlider volume={audioVolume} handleVolumeChange={handleVolumeChange} />
-				</div>
-				<div className="flex flex-row justify-center">
-					<ControlPanel  isAppOn={isAppOn} handlePowerButtonClick={handlePowerButtonClick} />
+				<div className="flex flex-col justify-center gap-y-4 lg:gap-x-14 lg:flex-row">
+					<div className="flex flex-row justify-center lg:-rotate-90 lg:w-[62px] lg:h-[112px]">
+						<div className="my-auto">
+							<VolumeSlider volume={audioVolume} handleVolumeChange={handleVolumeChange} />
+						</div>
+					</div>
+					<div className="flex flex-row justify-center">
+						<div className="my-auto">
+							<ControlPanel  isAppOn={isAppOn} handlePowerButtonClick={handlePowerButtonClick} />
+						</div>
+					</div>
 				</div>
 			</div>
-		</div>		
+		</div>
 	);
 }
